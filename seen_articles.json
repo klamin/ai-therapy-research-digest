@@ -131,5 +131,68 @@
     "url": "https://doi.org/10.1016/j.chbah.2026.100323",
     "sent_date": "2026-07-24",
     "category": "exploratory_adjacent"
+  },
+  {
+    "key": "10.1111/acps.70068",
+    "title": "Potentially Harmful Consequences of Artificial Intelligence ( <scp>AI</scp> ) Chatbot Use Among Patients With Mental Illness: Early Data From a Large Psychiatric Service System",
+    "year": 2026,
+    "doi": "https://doi.org/10.1111/acps.70068",
+    "url": "https://doi.org/10.1111/acps.70068",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.3389/fpsyt.2026.1729175",
+    "title": "The augmented clinician as a framework for human-AI collaboration in mental healthcare",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fpsyt.2026.1729175",
+    "url": "https://doi.org/10.3389/fpsyt.2026.1729175",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.3390/healthcare14040481",
+    "title": "The Role of Artificial Intelligence in Shaping the Doctor–Patient Relationship: A Narrative Review",
+    "year": 2026,
+    "doi": "https://doi.org/10.3390/healthcare14040481",
+    "url": "https://doi.org/10.3390/healthcare14040481",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.2196/preprints.93672",
+    "title": "Effectiveness of Chatbots in Mental Health Screening and Assessment: A Systematic Review (Preprint)",
+    "year": 2026,
+    "doi": "https://doi.org/10.2196/preprints.93672",
+    "url": "https://doi.org/10.2196/preprints.93672",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.1038/s41746-026-02888-9",
+    "title": "Young people’s perceptions and recommendations for conversational generative artificial intelligence in youth mental health",
+    "year": 2026,
+    "doi": "https://doi.org/10.1038/s41746-026-02888-9",
+    "url": "https://doi.org/10.1038/s41746-026-02888-9",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.5281/zenodo.20309396",
+    "title": "From Interpretation to Answerability: Structural Intelligence, Psychoanalysis, and Jungian Analysis Under Pressure",
+    "year": 2026,
+    "doi": "https://doi.org/10.5281/zenodo.20309396",
+    "url": "https://doi.org/10.5281/zenodo.20309396",
+    "sent_date": "2026-07-24",
+    "category": "psychoanalytic_perspective"
+  },
+  {
+    "key": "10.1038/s41598-026-38179-2",
+    "title": "Building user trust in AI chatbots for customer service through human-like cues and perceived reliability",
+    "year": 2026,
+    "doi": "https://doi.org/10.1038/s41598-026-38179-2",
+    "url": "https://doi.org/10.1038/s41598-026-38179-2",
+    "sent_date": "2026-07-24",
+    "category": "exploratory_adjacent"
   }
 ]
