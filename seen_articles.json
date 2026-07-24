@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "key": "10.2196/88932",
+    "title": "Psychotherapists’ Trust, Distrust, and Generative AI Practices in Psychotherapy: Qualitative Study",
+    "year": 2026,
+    "doi": "https://doi.org/10.2196/88932",
+    "url": "https://doi.org/10.2196/88932",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.64898/2026.06.18.26355962",
+    "title": "Generative Artificial Intelligence in Psychotherapy Practice: A Global Online Survey of Mental Health Professionals′ Adoption",
+    "year": 2026,
+    "doi": "https://doi.org/10.64898/2026.06.18.26355962",
+    "url": "https://doi.org/10.64898/2026.06.18.26355962",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.48550/arxiv.2602.19948",
+    "title": "Assessing Risks of Large Language Models in Mental Health Support: A Framework for Automated Clinical AI Red Teaming",
+    "year": 2026,
+    "doi": "https://doi.org/10.48550/arxiv.2602.19948",
+    "url": "https://doi.org/10.48550/arxiv.2602.19948",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.3389/fhumd.2026.1841912",
+    "title": "Generative artificial intelligence as a confidant for youth: navigating mental support and cultural stigma in Bandung",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fhumd.2026.1841912",
+    "url": "https://doi.org/10.3389/fhumd.2026.1841912",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.1016/j.chbr.2026.101181",
+    "title": "Relationships in the age of AI: A review on the opportunities and risks of synthetic relationships to reduce loneliness",
+    "year": 2026,
+    "doi": "https://doi.org/10.1016/j.chbr.2026.101181",
+    "url": "https://doi.org/10.1016/j.chbr.2026.101181",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.3389/fpsyg.2026.1642418",
+    "title": "Embodied simulation, body language, and symbolization: understanding somatic symptoms in psychoanalysis",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fpsyg.2026.1642418",
+    "url": "https://doi.org/10.3389/fpsyg.2026.1642418",
+    "sent_date": "2026-07-24",
+    "category": "psychoanalytic_perspective"
+  },
+  {
+    "key": "the ethical and legal complexities of regulating companion ai chatbots",
+    "title": "The Ethical and Legal Complexities of Regulating Companion AI Chatbots",
+    "year": 2027,
+    "doi": null,
+    "url": "https://lup.lub.lu.se/record/01283f65-6f24-4249-8cf5-94c73b1d0685",
+    "sent_date": "2026-07-24",
+    "category": "exploratory_adjacent"
+  }
+]
