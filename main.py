@@ -86,91 +86,21 @@ def match_terms(text: str, terms: List[str]) -> List[str]:
     return matches
 
 
-def split_sentences(text: str) -> List[str]:
-    if not text:
-        return []
-    text = re.sub(r"\s+", " ", text.strip())
-    return [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+def format_abstract(abstract: str) -> str:
+    if not abstract:
+        return "Abstract not available in OpenAlex."
 
+    abstract = re.sub(r"\s+", " ", abstract).strip()
 
-def clean_sentence(sentence: str, max_chars: int = 420) -> str:
-    sentence = re.sub(
-        r"^(Background|Objective|Objectives|Aim|Aims|Purpose|Methods|Method|Results|Findings|Conclusion|Conclusions|Discussion|Unlabelled):\s*",
-        "",
-        sentence.strip(),
+    # Remove common structured-abstract labels, but keep the content.
+    abstract = re.sub(
+        r"\b(Background|Objective|Objectives|Aim|Aims|Purpose|Methods|Method|Results|Findings|Conclusion|Conclusions|Discussion|Unlabelled):\s*",
+        r"**\1:** ",
+        abstract,
         flags=re.IGNORECASE,
     )
-    if len(sentence) > max_chars:
-        sentence = sentence[:max_chars].rsplit(" ", 1)[0] + "…"
-    return sentence
 
-
-def find_sentence(sentences: List[str], patterns: List[str]) -> Optional[str]:
-    for pattern in patterns:
-        regex = re.compile(pattern, flags=re.IGNORECASE)
-        for sentence in sentences:
-            if regex.search(sentence):
-                return clean_sentence(sentence)
-    return None
-
-
-def abstract_signals(abstract: str) -> Dict[str, str]:
-    sentences = split_sentences(abstract)
-
-    if not sentences:
-        return {
-            "focus": "Not clearly stated in the OpenAlex abstract.",
-            "approach": "Not clearly stated in the OpenAlex abstract.",
-            "takeaway": "Not clearly stated in the OpenAlex abstract.",
-        }
-
-    focus = find_sentence(sentences, [
-        r"\b(objective|aim|purpose|goal)\b",
-        r"\bwe (examined|explored|investigated|studied|assessed|evaluated)\b",
-        r"\bthis (study|paper|article) (examines|explores|investigates|addresses|assesses|evaluates)\b",
-        r"\blittle is known\b",
-        r"\bseeks to\b",
-    ])
-
-    approach = find_sentence(sentences, [
-        r"\bmethods?\b",
-        r"\bwe conducted\b",
-        r"\bparticipants?\b",
-        r"\bsample\b",
-        r"\bsurvey\b",
-        r"\bquestionnaire\b",
-        r"\binterviews?\b",
-        r"\bqualitative\b",
-        r"\bcross-sectional\b",
-        r"\blongitudinal\b",
-        r"\brandomi[sz]ed\b",
-        r"\bexperiment\b",
-        r"\bmixed methods\b",
-    ])
-
-    takeaway = find_sentence(sentences, [
-        r"\bresults?\b",
-        r"\bfindings?\b",
-        r"\bfound\b",
-        r"\brevealed\b",
-        r"\bshowed\b",
-        r"\bsuggests?\b",
-        r"\bconcludes?\b",
-        r"\bdemonstrates?\b",
-        r"\bindicates?\b",
-    ])
-
-    if not focus and sentences:
-        focus = clean_sentence(sentences[0])
-
-    if not takeaway and len(sentences) >= 2:
-        takeaway = clean_sentence(sentences[-1])
-
-    return {
-        "focus": focus or "Not clearly stated in the OpenAlex abstract.",
-        "approach": approach or "Not clearly stated in the OpenAlex abstract.",
-        "takeaway": takeaway or "Not clearly stated in the OpenAlex abstract.",
-    }
+    return abstract
 
 
 def method_signal(article: Dict[str, Any]) -> str:
@@ -301,6 +231,16 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
             "keywords": hard_matches,
         }
 
+    topic_matches = match_terms(text, config.get("required_topic_terms", []))
+    if not topic_matches:
+        return {
+            "excluded": True,
+            "score": -90,
+            "primary_category": "excluded",
+            "matched_terms": {"missing_topic_signal": []},
+            "keywords": [],
+        }
+
     category_scores: Dict[str, int] = {}
     matched_terms: Dict[str, List[str]] = {}
     source_lanes: Set[str] = set(article.get("source_lanes", []))
@@ -333,6 +273,8 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
     for matches in matched_terms.values():
         keywords.extend(matches)
 
+    keywords.extend(topic_matches)
+
     return {
         "excluded": False,
         "score": total_score,
@@ -340,7 +282,7 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
         "category_scores": category_scores,
         "matched_terms": matched_terms,
         "soft_downrank": soft_matches,
-        "keywords": sorted(set(keywords))[:12],
+        "keywords": sorted(set(keywords))[:14],
     }
 
 
@@ -400,16 +342,6 @@ def category_label(config: Dict[str, Any], category: str) -> str:
     return config.get("categories", {}).get(category, {}).get("label", category)
 
 
-def usefulness_note(category: str) -> str:
-    notes = {
-        "direct_relevance": "Closest to the thesis topic; likely worth checking first.",
-        "broader_field": "Useful for keeping orientation in the wider AI-and-mental-health field.",
-        "psychoanalytic_perspective": "Potentially useful for developing a psychoanalytic or psychodynamic angle.",
-        "exploratory_adjacent": "Not necessarily central, but may open a useful adjacent direction.",
-    }
-    return notes.get(category, "Potentially relevant; check manually.")
-
-
 def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> str:
     now = datetime.now(ZoneInfo("Europe/Prague"))
     themes = infer_digest_themes(selected)
@@ -454,7 +386,6 @@ def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> 
         lines.append("")
 
         for article in items:
-            signals = abstract_signals(article.get("abstract", ""))
             authors = ", ".join(article.get("authors", [])[:6]) or "not listed"
             if len(article.get("authors", [])) > 6:
                 authors += " et al."
@@ -463,7 +394,7 @@ def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> 
             keyword_text = ", ".join(keywords) if keywords else "none"
 
             lines.extend([
-                f"### {article.get('title')}",
+                f"### *{article.get('title')}*",
                 "",
                 f"**Authors:** {authors}",
                 f"**Year / date:** {article.get('year') or 'not listed'} / {article.get('publication_date') or 'not listed'}",
@@ -472,13 +403,7 @@ def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> 
                 f"**Method / format signal:** {method_signal(article)}",
                 f"**Link / DOI:** {article.get('url') or 'not listed'}",
                 "",
-                f"**Focus:** {signals['focus']}",
-                "",
-                f"**Approach:** {signals['approach']}",
-                "",
-                f"**Main point from the abstract:** {signals['takeaway']}",
-                "",
-                f"**Why it may be useful:** {usefulness_note(article['score']['primary_category'])}",
+                f"**Abstract:** {format_abstract(article.get('abstract', ''))}",
                 "",
                 f"**Keywords matched:** {keyword_text}",
                 "",

@@ -6,9 +6,24 @@ max_results_per_query: 20
 
 slot_targets:
   direct_relevance: 3
-  broader_field: 1
+  broader_field: 2
   psychoanalytic_perspective: 1
-  exploratory_adjacent: 2
+  exploratory_adjacent: 1
+
+required_topic_terms:
+  - "artificial intelligence"
+  - "generative AI"
+  - "generative artificial intelligence"
+  - "ChatGPT"
+  - "large language model"
+  - "LLM"
+  - "AI chatbot"
+  - "chatbot"
+  - "AI companion"
+  - "companion AI"
+  - "synthetic relationship"
+  - "human-machine"
+  - "human AI"
 
 queries:
   - lane: direct_relevance
@@ -171,7 +186,7 @@ categories:
       - "relational"
 
   exploratory_adjacent:
-    label: "Adjacent / exploratory perspectives"
+    label: "Exploratory perspectives"
     description: >
       Deliberately broader findings that may open a new direction rather than
       directly support the thesis: anthropomorphism of chatbots, self-disclosure
