@@ -11,16 +11,8 @@ import yaml
 
 CONFIG_PATH = "config.yaml"
 SEEN_PATH = "seen_articles.json"
+KNOWN_PATH = "known_articles.json"
 OPENALEX_URL = "https://api.openalex.org/works"
-
-
-CATEGORY_LABELS = {
-    "core_relevance": "Přímo relevantní pro BP",
-    "field_orientation": "Širší orientace v poli",
-    "quantitative_signal": "Kvantitativní / metodologický signál",
-    "psychodynamic_overlap": "Psychoanalytický / psychodynamický přesah",
-    "serendipity": "Řízený šum",
-}
 
 
 def load_config() -> Dict[str, Any]:
@@ -28,10 +20,10 @@ def load_config() -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
-def load_seen() -> List[Dict[str, Any]]:
-    if not os.path.exists(SEEN_PATH):
+def load_json_list(path: str) -> List[Dict[str, Any]]:
+    if not os.path.exists(path):
         return []
-    with open(SEEN_PATH, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -48,11 +40,30 @@ def normalize_text(value: Optional[str]) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
+def normalize_doi(value: Optional[str]) -> str:
+    if not value:
+        return ""
+    return (
+        value.lower()
+        .replace("https://doi.org/", "")
+        .replace("http://doi.org/", "")
+        .replace("doi:", "")
+        .strip()
+    )
+
+
 def article_key(article: Dict[str, Any]) -> str:
-    doi = article.get("doi")
+    doi = normalize_doi(article.get("doi") or article.get("key"))
     if doi:
-        return doi.lower().replace("https://doi.org/", "").strip()
+        return doi
     return normalize_text(article.get("title"))
+
+
+def known_key(item: Dict[str, Any]) -> str:
+    doi = normalize_doi(item.get("doi") or item.get("key"))
+    if doi:
+        return doi
+    return normalize_text(item.get("title"))
 
 
 def reconstruct_abstract(inverted_index: Optional[Dict[str, List[int]]]) -> str:
@@ -75,17 +86,118 @@ def match_terms(text: str, terms: List[str]) -> List[str]:
     return matches
 
 
-def first_sentences(text: str, max_sentences: int = 2, max_chars: int = 550) -> str:
+def split_sentences(text: str) -> List[str]:
     if not text:
-        return "OpenAlex u tohoto záznamu nemá abstrakt, takže posouzení stojí hlavně na názvu a metadatech."
+        return []
+    text = re.sub(r"\s+", " ", text.strip())
+    return [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
 
-    pieces = re.split(r"(?<=[.!?])\s+", text.strip())
-    summary = " ".join(pieces[:max_sentences]).strip()
 
-    if len(summary) > max_chars:
-        summary = summary[:max_chars].rsplit(" ", 1)[0] + "…"
+def clean_sentence(sentence: str, max_chars: int = 420) -> str:
+    sentence = re.sub(
+        r"^(Background|Objective|Objectives|Aim|Aims|Purpose|Methods|Method|Results|Findings|Conclusion|Conclusions|Discussion|Unlabelled):\s*",
+        "",
+        sentence.strip(),
+        flags=re.IGNORECASE,
+    )
+    if len(sentence) > max_chars:
+        sentence = sentence[:max_chars].rsplit(" ", 1)[0] + "…"
+    return sentence
 
-    return summary
+
+def find_sentence(sentences: List[str], patterns: List[str]) -> Optional[str]:
+    for pattern in patterns:
+        regex = re.compile(pattern, flags=re.IGNORECASE)
+        for sentence in sentences:
+            if regex.search(sentence):
+                return clean_sentence(sentence)
+    return None
+
+
+def abstract_signals(abstract: str) -> Dict[str, str]:
+    sentences = split_sentences(abstract)
+
+    if not sentences:
+        return {
+            "focus": "Not clearly stated in the OpenAlex abstract.",
+            "approach": "Not clearly stated in the OpenAlex abstract.",
+            "takeaway": "Not clearly stated in the OpenAlex abstract.",
+        }
+
+    focus = find_sentence(sentences, [
+        r"\b(objective|aim|purpose|goal)\b",
+        r"\bwe (examined|explored|investigated|studied|assessed|evaluated)\b",
+        r"\bthis (study|paper|article) (examines|explores|investigates|addresses|assesses|evaluates)\b",
+        r"\blittle is known\b",
+        r"\bseeks to\b",
+    ])
+
+    approach = find_sentence(sentences, [
+        r"\bmethods?\b",
+        r"\bwe conducted\b",
+        r"\bparticipants?\b",
+        r"\bsample\b",
+        r"\bsurvey\b",
+        r"\bquestionnaire\b",
+        r"\binterviews?\b",
+        r"\bqualitative\b",
+        r"\bcross-sectional\b",
+        r"\blongitudinal\b",
+        r"\brandomi[sz]ed\b",
+        r"\bexperiment\b",
+        r"\bmixed methods\b",
+    ])
+
+    takeaway = find_sentence(sentences, [
+        r"\bresults?\b",
+        r"\bfindings?\b",
+        r"\bfound\b",
+        r"\brevealed\b",
+        r"\bshowed\b",
+        r"\bsuggests?\b",
+        r"\bconcludes?\b",
+        r"\bdemonstrates?\b",
+        r"\bindicates?\b",
+    ])
+
+    if not focus and sentences:
+        focus = clean_sentence(sentences[0])
+
+    if not takeaway and len(sentences) >= 2:
+        takeaway = clean_sentence(sentences[-1])
+
+    return {
+        "focus": focus or "Not clearly stated in the OpenAlex abstract.",
+        "approach": approach or "Not clearly stated in the OpenAlex abstract.",
+        "takeaway": takeaway or "Not clearly stated in the OpenAlex abstract.",
+    }
+
+
+def method_signal(article: Dict[str, Any]) -> str:
+    text = " ".join([
+        article.get("title") or "",
+        article.get("abstract") or "",
+        article.get("type") or "",
+    ])
+    normalized = normalize_text(text)
+    signals = []
+
+    if any(term in normalized for term in ["qualitative", "interview", "interviews", "thematic analysis"]):
+        signals.append("qualitative")
+    if any(term in normalized for term in ["survey", "questionnaire", "cross sectional", "prevalence", "predictors", "attitudes"]):
+        signals.append("survey / quantitative")
+    if any(term in normalized for term in ["randomized", "randomised", "experiment", "trial", "rct"]):
+        signals.append("experimental / trial")
+    if any(term in normalized for term in ["systematic review", "scoping review", "meta analysis", "review"]):
+        signals.append("review")
+    if article.get("type") == "preprint":
+        signals.append("preprint")
+    if article.get("type") == "conference-paper":
+        signals.append("conference paper")
+    if article.get("type") == "article" and not signals:
+        signals.append("journal article")
+
+    return ", ".join(dict.fromkeys(signals)) if signals else "not clear from metadata"
 
 
 def fetch_openalex(query: Dict[str, Any], config: Dict[str, Any], from_date: str) -> List[Dict[str, Any]]:
@@ -186,7 +298,7 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
             "score": -100,
             "primary_category": "excluded",
             "matched_terms": {"hard_exclude": hard_matches},
-            "why": f"Vyřazeno kvůli tvrdému vyloučení: {', '.join(hard_matches)}.",
+            "keywords": hard_matches,
         }
 
     category_scores: Dict[str, int] = {}
@@ -212,22 +324,14 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
     if category_scores:
         primary_category = max(category_scores, key=lambda c: category_scores[c])
     else:
-        primary_category = "field_orientation"
+        primary_category = "broader_field"
 
     if category_scores.get(primary_category, 0) == 0:
-        primary_category = "field_orientation"
+        primary_category = "broader_field"
 
-    all_matches = []
+    keywords = []
     for matches in matched_terms.values():
-        all_matches.extend(matches)
-
-    if all_matches:
-        why = "Zachyceno hlavně díky výrazům: " + ", ".join(sorted(set(all_matches))[:10]) + "."
-    else:
-        why = "Zařazeno hlavně kvůli širšímu vyhledávacímu dotazu; relevanci je potřeba zkontrolovat ručně."
-
-    if soft_matches:
-        why += " Mírně sníženo kvůli: " + ", ".join(soft_matches[:5]) + "."
+        keywords.extend(matches)
 
     return {
         "excluded": False,
@@ -236,7 +340,7 @@ def score_article(article: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
         "category_scores": category_scores,
         "matched_terms": matched_terms,
         "soft_downrank": soft_matches,
-        "why": why,
+        "keywords": sorted(set(keywords))[:12],
     }
 
 
@@ -269,57 +373,119 @@ def select_digest_articles(scored: List[Dict[str, Any]], config: Dict[str, Any])
     return selected[:digest_size]
 
 
+def infer_digest_themes(selected: List[Dict[str, Any]]) -> List[str]:
+    all_keywords = set()
+    for article in selected:
+        all_keywords.update(k.lower() for k in article["score"].get("keywords", []))
+
+    themes = []
+
+    if any(k in all_keywords for k in ["psychotherapist", "psychotherapists", "therapist", "therapists", "mental health professionals"]):
+        themes.append("therapists’ and clinicians’ encounters with generative AI")
+    if any(k in all_keywords for k in ["therapeutic relationship", "therapeutic alliance", "trust", "distrust"]):
+        themes.append("trust, distrust, and the therapeutic relationship")
+    if any(k in all_keywords for k in ["survey", "questionnaire", "cross-sectional", "attitudes", "acceptance", "prevalence"]):
+        themes.append("survey evidence on adoption, attitudes, and use")
+    if any(k in all_keywords for k in ["ai chatbot", "chatbot", "mental health", "digital mental health"]):
+        themes.append("AI chatbots and digital mental-health support")
+    if any(k in all_keywords for k in ["psychoanalysis", "psychoanalytic", "psychodynamic", "transference", "countertransference"]):
+        themes.append("psychoanalytic or psychodynamic conceptual links")
+    if any(k in all_keywords for k in ["self-disclosure", "intimacy", "emotional support", "ai companion", "anthropomorphism"]):
+        themes.append("self-disclosure, intimacy, and human–AI relations")
+
+    return themes[:3]
+
+
+def category_label(config: Dict[str, Any], category: str) -> str:
+    return config.get("categories", {}).get(category, {}).get("label", category)
+
+
+def usefulness_note(category: str) -> str:
+    notes = {
+        "direct_relevance": "Closest to the thesis topic; likely worth checking first.",
+        "broader_field": "Useful for keeping orientation in the wider AI-and-mental-health field.",
+        "psychoanalytic_perspective": "Potentially useful for developing a psychoanalytic or psychodynamic angle.",
+        "exploratory_adjacent": "Not necessarily central, but may open a useful adjacent direction.",
+    }
+    return notes.get(category, "Potentially relevant; check manually.")
+
+
 def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> str:
     now = datetime.now(ZoneInfo("Europe/Prague"))
+    themes = infer_digest_themes(selected)
 
     lines = [
         f"# Research digest — {now.strftime('%Y-%m-%d')}",
         "",
-        f"**Téma:** {config.get('topic_name', 'AI a psychoterapie')}",
-        "",
-        "Poznámka: tahle verze nepoužívá žádný OpenAI API klíč. Výběr je založený na vyhledávání v OpenAlexu, deduplikaci a pravidlovém skórování podle názvu, abstraktu a metadat. Ber ho jako kurátorovaný filtr, ne jako definitivní odborné posouzení.",
-        "",
     ]
 
-    if not selected:
+    if selected:
+        if themes:
+            lines.append(
+                "This digest brings together new or newly surfaced work on "
+                + "; ".join(themes)
+                + "."
+            )
+        else:
+            lines.append(
+                "This digest brings together new or newly surfaced work related to AI, psychotherapy, mental health, and adjacent human–AI questions."
+            )
+        lines.append("")
+    else:
         lines.extend([
-            "Nenašel jsem žádné nové položky po odstranění už poslaných článků a tvrdě vyloučených výsledků.",
+            "No new items were selected after removing already seen or known articles.",
             "",
         ])
         return "\n".join(lines)
 
-    for category, label in CATEGORY_LABELS.items():
+    ordered_categories = [
+        "direct_relevance",
+        "broader_field",
+        "psychoanalytic_perspective",
+        "exploratory_adjacent",
+    ]
+
+    for category in ordered_categories:
         items = [a for a in selected if a["score"]["primary_category"] == category]
         if not items:
             continue
 
-        lines.append(f"## {label}")
+        lines.append(f"## {category_label(config, category)}")
         lines.append("")
 
         for article in items:
-            score = article["score"]
-            authors = ", ".join(article.get("authors", [])[:6]) or "neuvedeno"
+            signals = abstract_signals(article.get("abstract", ""))
+            authors = ", ".join(article.get("authors", [])[:6]) or "not listed"
             if len(article.get("authors", [])) > 6:
                 authors += " et al."
+
+            keywords = article["score"].get("keywords", [])
+            keyword_text = ", ".join(keywords) if keywords else "none"
 
             lines.extend([
                 f"### {article.get('title')}",
                 "",
-                f"**Autoři:** {authors}",
-                f"**Rok / datum:** {article.get('year') or 'neuvedeno'} / {article.get('publication_date') or 'neuvedeno'}",
-                f"**Zdroj:** {article.get('source_name') or 'neuvedeno'}",
-                f"**Typ v OpenAlex:** {article.get('type') or 'neuvedeno'}",
-                f"**Odkaz / DOI:** {article.get('url') or 'neuvedeno'}",
-                f"**Pravidlové skóre:** {score.get('score')}",
+                f"**Authors:** {authors}",
+                f"**Year / date:** {article.get('year') or 'not listed'} / {article.get('publication_date') or 'not listed'}",
+                f"**Source:** {article.get('source_name') or 'not listed'}",
+                f"**Type:** {article.get('type') or 'not listed'}",
+                f"**Method / format signal:** {method_signal(article)}",
+                f"**Link / DOI:** {article.get('url') or 'not listed'}",
                 "",
-                f"**Stručně:** {first_sentences(article.get('abstract', ''))}",
+                f"**Focus:** {signals['focus']}",
                 "",
-                f"**Proč se objevuje v digestu:** {score.get('why')}",
+                f"**Approach:** {signals['approach']}",
+                "",
+                f"**Main point from the abstract:** {signals['takeaway']}",
+                "",
+                f"**Why it may be useful:** {usefulness_note(article['score']['primary_category'])}",
+                "",
+                f"**Keywords matched:** {keyword_text}",
                 "",
             ])
 
     lines.extend([
-        "## Přidané do seen_articles.json",
+        "## Added to seen_articles.json",
         "",
     ])
 
@@ -352,8 +518,14 @@ def create_github_issue(title: str, body: str) -> None:
 
 def main() -> None:
     config = load_config()
-    seen = load_seen()
-    seen_keys = {item.get("key") for item in seen if item.get("key")}
+    seen = load_json_list(SEEN_PATH)
+    known = load_json_list(KNOWN_PATH)
+
+    blocked_keys = {
+        known_key(item)
+        for item in seen + known
+        if known_key(item)
+    }
 
     from_date = (
         datetime.now(ZoneInfo("Europe/Prague")).date()
@@ -365,7 +537,7 @@ def main() -> None:
         fetched.extend(fetch_openalex(query, config, from_date))
 
     unique_articles = deduplicate(fetched)
-    new_articles = [a for a in unique_articles if article_key(a) not in seen_keys]
+    new_articles = [a for a in unique_articles if article_key(a) not in blocked_keys]
 
     scored = []
     for article in new_articles:
@@ -395,7 +567,6 @@ def main() -> None:
             "url": article.get("url"),
             "sent_date": today,
             "category": article["score"].get("primary_category"),
-            "score": article["score"].get("score"),
         })
 
     save_seen(seen)
