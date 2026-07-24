@@ -1,0 +1,211 @@
+topic_name: "AI, psychoterapie a zkušenost terapeutů"
+
+digest_size: 7
+days_back: 180
+max_results_per_query: 20
+
+slot_targets:
+  core_relevance: 2
+  field_orientation: 2
+  quantitative_signal: 1
+  psychodynamic_overlap: 1
+  serendipity: 1
+
+queries:
+  - lane: core_relevance
+    text: "psychotherapists patients using ChatGPT therapy"
+
+  - lane: core_relevance
+    text: "therapists perspectives generative AI psychotherapy"
+
+  - lane: core_relevance
+    text: "client use ChatGPT psychotherapy therapist"
+
+  - lane: core_relevance
+    text: "therapeutic relationship generative AI psychotherapy"
+
+  - lane: field_orientation
+    text: "artificial intelligence mental health psychotherapy"
+
+  - lane: field_orientation
+    text: "AI chatbots mental health therapy users"
+
+  - lane: field_orientation
+    text: "generative AI mental health clinical practice"
+
+  - lane: quantitative_signal
+    text: "survey therapists artificial intelligence psychotherapy"
+
+  - lane: quantitative_signal
+    text: "quantitative study ChatGPT mental health users therapy"
+
+  - lane: quantitative_signal
+    text: "attitudes toward AI in mental health care survey"
+
+  - lane: psychodynamic_overlap
+    text: "psychoanalysis artificial intelligence psychotherapy"
+
+  - lane: psychodynamic_overlap
+    text: "psychodynamic artificial intelligence chatbot"
+
+  - lane: serendipity
+    text: "anthropomorphism chatbot mental health"
+
+  - lane: serendipity
+    text: "self-disclosure artificial intelligence chatbot"
+
+  - lane: serendipity
+    text: "emotional attachment artificial intelligence chatbot"
+
+categories:
+  core_relevance:
+    description: >
+      Články nejbližší bakalářské práci: situace, kdy klient nebo pacient
+      používá generativní AI mimo sezení nebo mezi sezeními a terapeut se s tím
+      setkává v terapii. Zajímají mě postoje terapeutů, jejich nejistoty,
+      prožívání, klinické rozhodování, dopad na terapeutický vztah, důvěru,
+      rámec, alianci a práci s tímto tématem v sezení.
+    lane_bonus: 8
+    term_weight: 3
+    terms:
+      - "psychotherapist"
+      - "psychotherapists"
+      - "therapist"
+      - "therapists"
+      - "clinician perspectives"
+      - "therapists perspectives"
+      - "client use"
+      - "patient use"
+      - "patients using"
+      - "clients using"
+      - "psychotherapy"
+      - "therapy"
+      - "therapeutic relationship"
+      - "therapeutic alliance"
+      - "clinical practice"
+      - "ChatGPT"
+      - "generative AI"
+      - "large language model"
+
+  field_orientation:
+    description: >
+      Články, které nemusí být přímo k mojí výzkumné otázce, ale pomáhají
+      chápat širší pole AI v duševním zdraví: jak se AI používá, jak ji lidé
+      hodnotí, jaká se řeší rizika, jak se mění klinická praxe, jaké jsou
+      etické otázky a jak se oblast vyvíjí mimo úzké téma mé bakalářky.
+    lane_bonus: 5
+    term_weight: 2
+    terms:
+      - "mental health"
+      - "digital mental health"
+      - "AI chatbot"
+      - "chatbot"
+      - "artificial intelligence"
+      - "generative artificial intelligence"
+      - "clinical decision"
+      - "clinical ethics"
+      - "ethics"
+      - "risk"
+      - "safety"
+      - "implementation"
+      - "user experience"
+      - "help-seeking"
+      - "self-help"
+      - "counseling"
+      - "counselling"
+
+  quantitative_signal:
+    description: >
+      Empirické studie s čísly, které mohou dát přehled o četnosti používání,
+      postojích, prediktorech důvěry, efektivitě, rizicích nebo rozdílech mezi
+      skupinami. Nemusí být tak blízké IPA metodě, ale mohou pomoct orientovat
+      se v rozsahu a struktuře celého tématu.
+    lane_bonus: 6
+    term_weight: 3
+    terms:
+      - "survey"
+      - "questionnaire"
+      - "cross-sectional"
+      - "longitudinal"
+      - "experiment"
+      - "randomized"
+      - "randomised"
+      - "RCT"
+      - "quantitative"
+      - "mixed methods"
+      - "prevalence"
+      - "predictors"
+      - "attitudes"
+      - "acceptance"
+      - "trust"
+      - "effectiveness"
+
+  psychodynamic_overlap:
+    description: >
+      Psychoanalytické, psychodynamické nebo teoreticky příbuzné texty:
+      člověk–AI vztah, fantazie, přenosové a kontratransferové možnosti,
+      externalizace, idealizace, selfobject-like funkce, intimita, závislost,
+      důvěra v ne-lidský objekt a kulturní změna vztahu k technologii.
+    lane_bonus: 7
+    term_weight: 3
+    terms:
+      - "psychoanalysis"
+      - "psychoanalytic"
+      - "psychodynamic"
+      - "transference"
+      - "countertransference"
+      - "object relations"
+      - "selfobject"
+      - "attachment"
+      - "fantasy"
+      - "intimacy"
+      - "dependency"
+      - "human-machine"
+      - "human AI relationship"
+      - "relational"
+
+  serendipity:
+    description: >
+      Řízený šum: články, které nemusí být přímo použitelné do bakalářky, ale
+      mohou otevřít nový směr. Například antropomorfizace chatbotů, svěřování
+      se AI, emoční regulace technologiemi, důvěra v AI, epistemická autorita,
+      digitální intimita, attachment k chatbotům nebo širší kulturní proměna
+      toho, jak lidé hledají radu a porozumění.
+    lane_bonus: 4
+    term_weight: 2
+    terms:
+      - "anthropomorphism"
+      - "anthropomorphic"
+      - "self-disclosure"
+      - "disclosure"
+      - "emotional support"
+      - "emotional attachment"
+      - "companion chatbot"
+      - "AI companion"
+      - "trust in AI"
+      - "intimacy"
+      - "loneliness"
+      - "emotion regulation"
+      - "advice-seeking"
+      - "epistemic trust"
+      - "human-computer interaction"
+
+hard_exclude_terms:
+  - "radiology"
+  - "pathology image classification"
+  - "dermatology image classification"
+  - "ophthalmology image classification"
+  - "surgery"
+  - "hospital billing"
+  - "customer service chatbot"
+  - "programming benchmark"
+
+soft_downrank_terms:
+  - "medical education"
+  - "student assessment"
+  - "administrative documentation"
+  - "electronic health record"
+  - "diagnostic accuracy only"
+  - "triage without psychotherapy"
+
+soft_downrank_penalty: 2

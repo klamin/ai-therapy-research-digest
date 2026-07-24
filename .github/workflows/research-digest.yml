@@ -1,0 +1,41 @@
+name: Research digest
+
+on:
+  schedule:
+    - cron: "0 6 1,15 * *"
+      timezone: "Europe/Prague"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python main.py
+
+      - name: Commit updated seen_articles.json
+        run: |
+          git config user.name "research-digest-bot"
+          git config user.email "research-digest-bot@users.noreply.github.com"
+          git add seen_articles.json
+          git diff --cached --quiet || git commit -m "Update seen articles"
+          git push
