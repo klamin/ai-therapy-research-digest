@@ -194,5 +194,68 @@
     "url": "https://doi.org/10.1038/s41598-026-38179-2",
     "sent_date": "2026-07-24",
     "category": "exploratory_adjacent"
+  },
+  {
+    "key": "10.3389/fdgth.2026.1708806",
+    "title": "Generative AI as a de facto mental health provider: a policy brief and urgent call for regulation",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fdgth.2026.1708806",
+    "url": "https://doi.org/10.3389/fdgth.2026.1708806",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.15557/pipk.2025.0028",
+    "title": "Overview of the use of digital technologies in psychotherapy: effectiveness, accessibility and ethical challenges",
+    "year": 2026,
+    "doi": "https://doi.org/10.15557/pipk.2025.0028",
+    "url": "https://doi.org/10.15557/pipk.2025.0028",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "like a therapist but not reddit narratives of ai in mental health contexts",
+    "title": "Like a Therapist, But Not: Reddit Narratives of AI in Mental Health Contexts",
+    "year": 2026,
+    "doi": null,
+    "url": "http://arxiv.org/abs/2601.20747",
+    "sent_date": "2026-07-24",
+    "category": "direct_relevance"
+  },
+  {
+    "key": "10.3390/bs16020278",
+    "title": "How Consistent Friendlike Conversation with AI Companions Influences Our Attitudes and Perceptions Toward AI: An Exploratory Experiment",
+    "year": 2026,
+    "doi": "https://doi.org/10.3390/bs16020278",
+    "url": "https://doi.org/10.3390/bs16020278",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.3389/fpsyg.2026.1766427",
+    "title": "Beyond the hype: a psychological perspective on AI chatbots",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fpsyg.2026.1766427",
+    "url": "https://doi.org/10.3389/fpsyg.2026.1766427",
+    "sent_date": "2026-07-24",
+    "category": "broader_field"
+  },
+  {
+    "key": "10.1177/17456916251404394",
+    "title": "Artificial Intelligence and the Psychology of Human Connection",
+    "year": 2026,
+    "doi": "https://doi.org/10.1177/17456916251404394",
+    "url": "https://doi.org/10.1177/17456916251404394",
+    "sent_date": "2026-07-24",
+    "category": "psychoanalytic_perspective"
+  },
+  {
+    "key": "10.1145/3772318.3790468",
+    "title": "Chaplains' Reflections on the Design and Usage of AI for Conversational Care",
+    "year": 2026,
+    "doi": "https://doi.org/10.1145/3772318.3790468",
+    "url": "https://doi.org/10.1145/3772318.3790468",
+    "sent_date": "2026-07-24",
+    "category": "exploratory_adjacent"
   }
 ]
