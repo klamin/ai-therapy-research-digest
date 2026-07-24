@@ -1,1 +1,72 @@
-[]
+[
+  {
+    "key": "10.2196/88932",
+    "title": "Psychotherapists’ Trust, Distrust, and Generative AI Practices in Psychotherapy: Qualitative Study",
+    "year": 2026,
+    "doi": "https://doi.org/10.2196/88932",
+    "url": "https://doi.org/10.2196/88932",
+    "sent_date": "2026-07-24",
+    "category": "core_relevance",
+    "score": 54
+  },
+  {
+    "key": "10.64898/2026.06.18.26355962",
+    "title": "Generative Artificial Intelligence in Psychotherapy Practice: A Global Online Survey of Mental Health Professionals′ Adoption",
+    "year": 2026,
+    "doi": "https://doi.org/10.64898/2026.06.18.26355962",
+    "url": "https://doi.org/10.64898/2026.06.18.26355962",
+    "sent_date": "2026-07-24",
+    "category": "core_relevance",
+    "score": 50
+  },
+  {
+    "key": "10.3389/fhumd.2026.1841912",
+    "title": "Generative artificial intelligence as a confidant for youth: navigating mental support and cultural stigma in Bandung",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fhumd.2026.1841912",
+    "url": "https://doi.org/10.3389/fhumd.2026.1841912",
+    "sent_date": "2026-07-24",
+    "category": "field_orientation",
+    "score": 61
+  },
+  {
+    "key": "10.2196/91454",
+    "title": "It Is the Journey, Not the Destination: Moving From End Points to Trajectories When Assessing Chatbot Mental Health Safety",
+    "year": 2026,
+    "doi": "https://doi.org/10.2196/91454",
+    "url": "https://doi.org/10.2196/91454",
+    "sent_date": "2026-07-24",
+    "category": "field_orientation",
+    "score": 41
+  },
+  {
+    "key": "10.3390/healthcare14091247",
+    "title": "Exploring Students’ Perceptions and Usage of Artificial Intelligence in Supporting Mental Health: A Preliminary Study in Higher Education in Qatar",
+    "year": 2026,
+    "doi": "https://doi.org/10.3390/healthcare14091247",
+    "url": "https://doi.org/10.3390/healthcare14091247",
+    "sent_date": "2026-07-24",
+    "category": "quantitative_signal",
+    "score": 37
+  },
+  {
+    "key": "10.3389/fpsyg.2026.1642418",
+    "title": "Embodied simulation, body language, and symbolization: understanding somatic symptoms in psychoanalysis",
+    "year": 2026,
+    "doi": "https://doi.org/10.3389/fpsyg.2026.1642418",
+    "url": "https://doi.org/10.3389/fpsyg.2026.1642418",
+    "sent_date": "2026-07-24",
+    "category": "psychodynamic_overlap",
+    "score": 37
+  },
+  {
+    "key": "10.1145/3772318.3791370",
+    "title": "Scaffolded Vulnerability: Chatbot-Mediated Reciprocal Self-Disclosure and Need-Supportive Interaction in Couples",
+    "year": 2026,
+    "doi": "https://doi.org/10.1145/3772318.3791370",
+    "url": "https://doi.org/10.1145/3772318.3791370",
+    "sent_date": "2026-07-24",
+    "category": "serendipity",
+    "score": 21
+  }
+]
