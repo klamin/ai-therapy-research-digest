@@ -86,19 +86,26 @@ def match_terms(text: str, terms: List[str]) -> List[str]:
     return matches
 
 
-def format_abstract(abstract: str) -> str:
+def format_abstract(abstract: str, max_chars: int = 1400) -> str:
     if not abstract:
         return "Abstract not available in OpenAlex."
 
     abstract = re.sub(r"\s+", " ", abstract).strip()
 
-    # Remove common structured-abstract labels, but keep the content.
+    # Remove simple XML/HTML-like tags that sometimes appear in preprint abstracts.
+    abstract = re.sub(r"</?title>", "", abstract, flags=re.IGNORECASE)
+    abstract = re.sub(r"<[^>]+>", "", abstract)
+
+    # Make structured abstract labels readable, but do not over-format the whole text.
     abstract = re.sub(
         r"\b(Background|Objective|Objectives|Aim|Aims|Purpose|Methods|Method|Results|Findings|Conclusion|Conclusions|Discussion|Unlabelled):\s*",
         r"**\1:** ",
         abstract,
         flags=re.IGNORECASE,
     )
+
+    if len(abstract) > max_chars:
+        abstract = abstract[:max_chars].rsplit(" ", 1)[0] + "…"
 
     return abstract
 
@@ -403,7 +410,7 @@ def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> 
                 f"**Method / format signal:** {method_signal(article)}",
                 f"**Link / DOI:** {article.get('url') or 'not listed'}",
                 "",
-                f"**Abstract:** {format_abstract(article.get('abstract', ''))}",
+                f"**Abstract excerpt:** {format_abstract(article.get('abstract', ''), int(config.get('max_abstract_chars', 1400)))}",
                 "",
                 f"**Keywords matched:** {keyword_text}",
                 "",
