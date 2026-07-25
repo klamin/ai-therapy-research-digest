@@ -86,7 +86,7 @@ def match_terms(text: str, terms: List[str]) -> List[str]:
     return matches
 
 
-def format_abstract(abstract: str, max_chars: int = 1400) -> str:
+def format_abstract(abstract: str, max_chars: int = 2000) -> str:
     if not abstract:
         return "Abstract not available in OpenAlex."
 
@@ -410,7 +410,7 @@ def build_issue_body(selected: List[Dict[str, Any]], config: Dict[str, Any]) -> 
                 f"**Method / format signal:** {method_signal(article)}",
                 f"**Link / DOI:** {article.get('url') or 'not listed'}",
                 "",
-                f"**Abstract excerpt:** {format_abstract(article.get('abstract', ''), int(config.get('max_abstract_chars', 1400)))}",
+                f"**Abstract excerpt:** {format_abstract(article.get('abstract', ''), int(config.get('max_abstract_chars', 2000)))}",
                 "",
                 f"**Keywords matched:** {keyword_text}",
                 "",

@@ -3,7 +3,7 @@ topic_name: "AI, psychotherapy, and therapist/client experiences"
 digest_size: 7
 days_back: 180
 max_results_per_query: 20
-max_abstract_chars: 1400
+max_abstract_chars: 2000
 
 slot_targets:
   direct_relevance: 3
