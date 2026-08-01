@@ -8,6 +8,8 @@ from zoneinfo import ZoneInfo
 import requests
 import yaml
 
+import time
+
 
 CONFIG_PATH = "config.yaml"
 SEEN_PATH = "seen_articles.json"
@@ -150,9 +152,25 @@ def fetch_openalex(query: Dict[str, Any], config: Dict[str, Any], from_date: str
         "per-page": int(config.get("max_results_per_query", 20)),
     }
 
-    response = requests.get(OPENALEX_URL, params=params, timeout=30)
-    response.raise_for_status()
-    data = response.json()
+    for attempt in range(5):
+        response = requests.get(url, params=params, timeout=30)
+
+        if response.status_code == 429:
+            retry_after = response.headers.get("Retry-After")
+            wait_seconds = int(retry_after) if retry_after and retry_after.isdigit() else 10 * (attempt + 1)
+            print(f"OpenAlex rate limit hit. Waiting {wait_seconds} seconds before retrying...")
+            time.sleep(wait_seconds)
+            continue
+
+        response.raise_for_status()
+        data = response.json()
+
+        time.sleep(float(config.get("openalex_pause_seconds", 1.5)))
+
+        return data.get("results", [])
+
+    print(f"OpenAlex kept rate-limiting this query, skipping: {query}")
+    return []
 
     articles = []
 

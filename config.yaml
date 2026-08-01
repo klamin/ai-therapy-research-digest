@@ -11,6 +11,8 @@ slot_targets:
   psychoanalytic_perspective: 1
   exploratory_adjacent: 1
 
+openalex_pause_seconds: 1.5
+
 required_topic_terms:
   - "artificial intelligence"
   - "generative AI"
